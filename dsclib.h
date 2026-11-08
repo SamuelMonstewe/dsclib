@@ -8,6 +8,9 @@ typedef enum Color{
 #define PAIR(TYPE_FIRST, TYPE_SECOND) struct Pair_##TYPE_FIRST##_##TYPE_SECOND
 #define RB_TREE_NODE(SUFFIX) struct Rb_Tree_Node_##SUFFIX
 #define RB_TREE(SUFFIX) struct Rb_Tree_##SUFFIX
+#define MAP(SUFFIX) RB_TREE(SUFFIX)
+#define SET(SUFFIX) RB_TREE(SUFFIX)
+
 #define RED 0
 #define BLACK 1
 
