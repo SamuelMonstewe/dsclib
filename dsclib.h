@@ -14,6 +14,8 @@ typedef enum Color{
 #endif
 
 #ifdef DSCLIB_IMPLEMENTATION
+#include <stdlib.h>
+
 #define PAIR_DEF(TYPE_FIRST, TYPE_SECOND)\
 struct Pair_##TYPE_FIRST##_##TYPE_SECOND {\
   TYPE_FIRST first;\
@@ -24,7 +26,8 @@ struct Pair_##TYPE_FIRST##_##TYPE_SECOND {\
 struct Rb_Tree_Node_##SUFFIX{\
   RB_TREE_NODE(SUFFIX) *right;\
   RB_TREE_NODE(SUFFIX) *left;\
-  RB_TREE_NODE(SUFFIX) *parent;\ Color color;\
+  RB_TREE_NODE(SUFFIX) *parent;\
+  Color color;\
   T data;\
 };
 
@@ -49,5 +52,6 @@ RB_TREE(SUFFIX) *dsc_new_rb_tree_##SUFFIX(){\
   tree->nil = malloc(sizeof(RB_TREE_NODE(SUFFIX)));\
   return tree;\
 }
+
 
 #endif // DSCLIB_IMPLEMENTATION
