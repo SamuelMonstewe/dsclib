@@ -8,6 +8,9 @@ typedef enum Color{
 #define PAIR(TYPE_FIRST, TYPE_SECOND) struct Pair_##TYPE_FIRST##_##TYPE_SECOND
 #define RB_TREE_NODE(SUFFIX) struct Rb_Tree_Node_##SUFFIX
 #define RB_TREE(SUFFIX) struct Rb_Tree_##SUFFIX
+#define RED 0
+#define BLACK 1
+
 #endif
 
 #ifdef DSCLIB_IMPLEMENTATION
@@ -31,9 +34,13 @@ struct Rb_Tree_##SUFFIX{\
   RB_TREE_NODE(SUFFIX) *root;\
 };
 
-#define NEW_RB_TREE_NODE(T, SUFFIX)
-Rb_Tree_Node_##SUFFIX dsclib_new_rb_tree_node_##SUFFIX(T data){
-  
+#define NEW_RB_TREE_NODE(T, SUFFIX)\
+RB_TREE_NODE(SUFFIX) *dsclib_new_rb_tree_node_##SUFFIX(T data){\
+  RB_TREE_NODE(SUFFIX) *node = malloc(sizeof(RB_TREE_NODE(SUFFIX)));\
+  node->left = NULL;\
+  node->right = NULL;\
+  node->data = data;\
+  node->color = BLACK;\
 }
 
 #endif // DSCLIB_IMPLEMENTATION
