@@ -11,8 +11,14 @@ typedef enum Color{
 #define MAP(SUFFIX) RB_TREE(SUFFIX)
 #define SET(SUFFIX) RB_TREE(SUFFIX)
 
-#define RED 0
-#define BLACK 1
+#define MAP_DEF(T, SUFFIX)\
+   RB_TREE_NODE_DEF(T, SUFFIX)\
+   RB_TREE_DEF(SUFFIX)\
+   NEW_RB_TREE(SUFFIX)\
+   NEW_RB_TREE_NODE(T, SUFFIX)\
+   LEFT_ROTATE(SUFFIX)\
+   RIGHT_ROTATE(SUFFIX)\
+   RB_INSERT_FIXUP(SUFFIX)\
 
 #endif
 
@@ -42,12 +48,13 @@ struct Rb_Tree_##SUFFIX{\
 
 #define NEW_RB_TREE_NODE(T, SUFFIX)\
 RB_TREE_NODE(SUFFIX) *dsc_new_rb_tree_node_##SUFFIX(T data, RB_TREE_NODE(SUFFIX) *nil){\
+  Color color = BLACK;\
   RB_TREE_NODE(SUFFIX) *node = malloc(sizeof(RB_TREE_NODE(SUFFIX)));\
   node->left = nil;\
   node->right = nil;\
   node->parent = nil;\
   node->data = data;\
-  node->color = BLACK;\
+  node->color = color;\
 }
 
 #define NEW_RB_TREE(SUFFIX)\
@@ -58,7 +65,7 @@ RB_TREE(SUFFIX) *dsc_new_rb_tree_##SUFFIX(){\
 }
 
 #define LEFT_ROTATE(SUFFIX)\
-void left_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
+void dsc_left_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
   RB_TREE_NODE(SUFFIX) *y = x->left;\
   x->right = y->left;\
 \
@@ -82,7 +89,7 @@ void left_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
 }
 
 #define RIGHT_ROTATE(SUFFIX)\
-void right_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
+void dsc_right_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
   RB_TREE_NODE(SUFFIX) *y = x->right;\
   x->left = y->right;\
 \
@@ -104,6 +111,45 @@ void right_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
   x->parent = y;\
 }
 
-#define RB_INSERT_FIXUP(SUFFIX) // todo
-
+#define RB_INSERT_FIXUP(SUFFIX)\
+void dsc_rb_insert_fixup_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *z){\
+  Color color;\
+  while(z->parent->color == RED){\
+    if(z->parent == z->parent->parent->left){\
+      RB_TREE_NODE(SUFFIX) *y = z->parent->parent->right;\
+      if(y->color == RED){\
+        z->parent->color = BLACK;\
+        y->color = BLACK;\
+        z->parent->parent->color = RED;\
+        z = z->parent->parent;\
+      } else{\
+        if(z == z->parent->right){\
+          z = z->parent;\
+          dsc_left_rotate_##SUFFIX(T, z);\
+        }\
+        z->parent->color = BLACK;\
+        z->parent->parent->color = RED;\
+        dsc_left_rotate_##SUFFIX(T, z->parent->parent); \
+      }\
+    } else{\
+      RB_TREE_NODE(SUFFIX) *y = z->parent->parent->left;\
+      if(y->color == RED){\
+        z->parent->color = BLACK;\
+        y->color = BLACK;\
+        z->parent->parent->color = RED;\
+        z->parent->parent;\
+      } else{\
+        if(z == z->parent->left){\
+          z = z->parent;\
+          dsc_right_rotate_##SUFFIX(T, z);\
+        }\
+        \
+        z->parent->color = BLACK;\
+        z->parent->parent->color = RED;\
+        dsc_left_rotate_##SUFFIX(T, z->parent->parent);\
+      }  \
+    } \
+  }\
+T->root->color = BLACK;\
+}
 #endif // DSCLIB_IMPLEMENTATION
