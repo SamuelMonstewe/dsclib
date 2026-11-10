@@ -41,10 +41,11 @@ struct Rb_Tree_##SUFFIX{\
 };
 
 #define NEW_RB_TREE_NODE(T, SUFFIX)\
-RB_TREE_NODE(SUFFIX) *dsc_new_rb_tree_node_##SUFFIX(T data){\
+RB_TREE_NODE(SUFFIX) *dsc_new_rb_tree_node_##SUFFIX(T data, RB_TREE_NODE(SUFFIX) *nil){\
   RB_TREE_NODE(SUFFIX) *node = malloc(sizeof(RB_TREE_NODE(SUFFIX)));\
-  node->left = NULL;\
-  node->right = NULL;\
+  node->left = nil;\
+  node->right = nil;\
+  node->parent = nil;\
   node->data = data;\
   node->color = BLACK;\
 }
@@ -56,5 +57,53 @@ RB_TREE(SUFFIX) *dsc_new_rb_tree_##SUFFIX(){\
   return tree;\
 }
 
+#define LEFT_ROTATE(SUFFIX)\
+void left_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
+  RB_TREE_NODE(SUFFIX) *y = x->left;\
+  x->right = y->left;\
+\
+  if(y->left != T->nil){\
+    y->left->parent = x;\
+  }\
+\
+  y->parent = x->parent;\
+\
+  if(x->parent == T->nil){\
+    T->root = y;\
+  } else if(x == x->parent->left){\
+    x->parent->left = y;\
+  } else{\
+    x->parent->right = y;\
+  }\
+\
+  y->left = x;\
+  x->parent = y;\
+\
+}
+
+#define RIGHT_ROTATE(SUFFIX)\
+void right_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
+  RB_TREE_NODE(SUFFIX) *y = x->right;\
+  x->left = y->right;\
+\
+  if(y->right != T->nil){\
+    y->right->parent = x;\
+  }\
+\
+  y->parent = x->parent;\
+\
+  if(x->parent == T->nil){\
+    T->root = y;\
+  } else if(x == x->parent->right){\
+    x->parent->right = y;\
+  } else{\
+    x->parent->right = y;\
+  }\
+\
+  y->right = x;\
+  x->parent = y;\
+}
+
+#define RB_INSERT_FIXUP(SUFFIX) // todo
 
 #endif // DSCLIB_IMPLEMENTATION
