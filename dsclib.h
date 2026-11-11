@@ -11,7 +11,7 @@ typedef enum Color{
 #define MAP(SUFFIX) RB_TREE(SUFFIX)
 #define SET(SUFFIX) RB_TREE(SUFFIX)
 
-#define MAP_DEF(T, SUFFIX)\
+#define MAP_DEF(T, SUFFIX, COMPARE_FN)\
    RB_TREE_NODE_DEF(T, SUFFIX)\
    RB_TREE_DEF(SUFFIX)\
    NEW_RB_TREE(SUFFIX)\
@@ -19,6 +19,7 @@ typedef enum Color{
    LEFT_ROTATE(SUFFIX)\
    RIGHT_ROTATE(SUFFIX)\
    RB_INSERT_FIXUP(SUFFIX)\
+   RB_INSERT(SUFFIX, T, COMPARE_FN)\
 
 #endif
 
@@ -48,19 +49,20 @@ struct Rb_Tree_##SUFFIX{\
 
 #define NEW_RB_TREE_NODE(T, SUFFIX)\
 RB_TREE_NODE(SUFFIX) *dsc_new_rb_tree_node_##SUFFIX(T data, RB_TREE_NODE(SUFFIX) *nil){\
-  Color color = BLACK;\
   RB_TREE_NODE(SUFFIX) *node = malloc(sizeof(RB_TREE_NODE(SUFFIX)));\
   node->left = nil;\
   node->right = nil;\
   node->parent = nil;\
   node->data = data;\
-  node->color = color;\
+  node->color = BLACK;\
 }
 
 #define NEW_RB_TREE(SUFFIX)\
 RB_TREE(SUFFIX) *dsc_new_rb_tree_##SUFFIX(){\
   RB_TREE(SUFFIX) *tree = malloc(sizeof(RB_TREE(SUFFIX)));\
   tree->nil = malloc(sizeof(RB_TREE_NODE(SUFFIX)));\
+  tree->root = tree->nil;\
+  tree->nil->color = BLACK;\
   return tree;\
 }
 
@@ -104,7 +106,7 @@ void dsc_right_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
   } else if(x == x->parent->right){\
     x->parent->right = y;\
   } else{\
-    x->parent->right = y;\
+    x->parent->left = y;\
   }\
 \
   y->right = x;\
@@ -113,7 +115,6 @@ void dsc_right_rotate_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *x){\
 
 #define RB_INSERT_FIXUP(SUFFIX)\
 void dsc_rb_insert_fixup_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *z){\
-  Color color;\
   while(z->parent->color == RED){\
     if(z->parent == z->parent->parent->left){\
       RB_TREE_NODE(SUFFIX) *y = z->parent->parent->right;\
@@ -151,5 +152,43 @@ void dsc_rb_insert_fixup_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *z){\
     } \
   }\
 T->root->color = BLACK;\
+}
+
+#define RB_INSERT(SUFFIX, T, COMPARE_FN) \
+void dsc_rb_insert_##SUFFIX(RB_TREE(SUFFIX) *tree, T d){\
+  RB_TREE_NODE(SUFFIX) *x = tree->root;\
+  RB_TREE_NODE(SUFFIX) *y = tree->nil;\
+  RB_TREE_NODE(SUFFIX) *z = dsc_new_rb_tree_node_##SUFFIX(d, tree->nil);\
+\
+  int cmp = 0;\
+  \
+  while(x != tree->nil){\
+    y = x;\
+    cmp = COMPARE_FN(z->data, x->data);\
+    \
+    if(cmp < 0){\
+      x = x->left;\
+    } else{\
+      x = x->right;\
+    }\
+  }\
+  \
+  z->parent = y;\
+  \
+  if(y == tree->nil){\
+    tree->root = z;\
+  } \
+  else if(COMPARE_FN(z->data, y->data) < 0){\
+    y->left = z;\
+  }\
+  else {\
+    y->right = z;\
+  }\
+  \
+  z->left = tree->nil;\
+  z->right = tree->nil;\
+  z->color = RED;\
+  \
+  dsc_rb_insert_fixup_##SUFFIX(tree, z); \
 }
 #endif // DSCLIB_IMPLEMENTATION
