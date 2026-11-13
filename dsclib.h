@@ -135,7 +135,7 @@ void dsc_rb_insert_fixup_##SUFFIX(RB_TREE(SUFFIX) *T, RB_TREE_NODE(SUFFIX) *z){\
         }\
         z->parent->color = BLACK;\
         z->parent->parent->color = RED;\
-        dsc_left_rotate_##SUFFIX(T, z->parent->parent); \
+        dsc_right_rotate_##SUFFIX(T, z->parent->parent); \
       }\
     } else{\
       RB_TREE_NODE(SUFFIX) *y = z->parent->parent->left;\
