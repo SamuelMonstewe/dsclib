@@ -8,18 +8,21 @@ typedef enum Color{
 #define PAIR(TYPE_FIRST, TYPE_SECOND) struct Pair_##TYPE_FIRST##_##TYPE_SECOND
 #define RB_TREE_NODE(SUFFIX) struct Rb_Tree_Node_##SUFFIX
 #define RB_TREE(SUFFIX) struct Rb_Tree_##SUFFIX
+#define MAP_INSERT(SUFFIX, M, P) dsc_rb_insert_##SUFFIX(M, P)
+#define MAP_SEARCH(SUFFIX, M, P) dsc_rb_search_##SUFFIX(P, M->root)
 #define MAP(SUFFIX) RB_TREE(SUFFIX)
 #define SET(SUFFIX) RB_TREE(SUFFIX)
 
 #define MAP_DEF(T, SUFFIX, COMPARE_FN)\
-   RB_TREE_NODE_DEF(T, SUFFIX)\
-   RB_TREE_DEF(SUFFIX)\
-   NEW_RB_TREE(SUFFIX)\
-   NEW_RB_TREE_NODE(T, SUFFIX)\
-   LEFT_ROTATE(SUFFIX)\
-   RIGHT_ROTATE(SUFFIX)\
-   RB_INSERT_FIXUP(SUFFIX)\
-   RB_INSERT(SUFFIX, T, COMPARE_FN)\
+  RB_TREE_NODE_DEF(T, SUFFIX)\
+  RB_TREE_DEF(SUFFIX)\
+  NEW_RB_TREE(SUFFIX)\
+  NEW_RB_TREE_NODE(T, SUFFIX)\
+  LEFT_ROTATE(SUFFIX)\
+  RIGHT_ROTATE(SUFFIX)\
+  RB_INSERT_FIXUP(SUFFIX)\
+  RB_INSERT(SUFFIX, T, COMPARE_FN)\
+  RB_SEARCH(SUFFIX, T, COMPARE_FN)
 
 #endif
 
@@ -54,7 +57,7 @@ RB_TREE_NODE(SUFFIX) *dsc_new_rb_tree_node_##SUFFIX(T data, RB_TREE_NODE(SUFFIX)
   node->right = nil;\
   node->parent = nil;\
   node->data = data;\
-  node->color = BLACK;\
+  node->color = RED;\
 }
 
 #define NEW_RB_TREE(SUFFIX)\
@@ -185,10 +188,22 @@ void dsc_rb_insert_##SUFFIX(RB_TREE(SUFFIX) *tree, T d){\
     y->right = z;\
   }\
   \
-  z->left = tree->nil;\
-  z->right = tree->nil;\
-  z->color = RED;\
-  \
   dsc_rb_insert_fixup_##SUFFIX(tree, z); \
+}
+#define RB_SEARCH(SUFFIX, T, COMPARE_FN) \
+RB_TREE_NODE(SUFFIX) *dsc_rb_search_##SUFFIX(T d, RB_TREE_NODE(SUFFIX) *node){\
+  if(node == NULL) return NULL;\
+\
+  int cmp = COMPARE_FN(node->data, d);\
+\
+  if(cmp == 0){\
+     return node;\
+  }\
+\
+  if(cmp > 0){\
+    return dsc_rb_search_##SUFFIX(d, node->right);\
+  }\
+  \
+  return dsc_rb_search_##SUFFIX(d, node->left);\
 }
 #endif // DSCLIB_IMPLEMENTATION
