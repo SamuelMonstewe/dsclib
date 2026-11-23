@@ -5,7 +5,7 @@
 * **Cache:** L1d 192 KiB | L2 5 MiB | L3 8 MiB
 * **Memory:** 8 GB DDR4 @ 3200 MHz (Dual-Channel)
 * **OS:** Ubuntu 24.04.5 LTS
-* **Compiler:** GCC 13.3.0 (`-O3 -march=native -Wall -g`)
+* **Compiler:** GCC 13.3.0 (`-O2 -march=native -Wall -g`)
 * **Methodology:** 10 independent runs per input size ($n$), measured with `CLOCK_MONOTONIC`.
 
 ### Case 1: Sequential Insertion & Search (Worst-Case)
