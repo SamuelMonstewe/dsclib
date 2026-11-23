@@ -3,7 +3,7 @@
 ### Test Environment
 * **CPU:** 11th Gen Intel(R) Core(TM) i5-11300H (3.10 GHz base / up to 4.40 GHz boost)
 * **Cache:** L1d 192 KiB | L2 5 MiB | L3 8 MiB
-* **Memory:** 8 GB DDR4 @ 3200 MHz (Dual-Channel)
+* **Memory:** 8 GB DDR4 @ 1600 MHz
 * **OS:** Ubuntu 24.04.5 LTS
 * **Compiler:** GCC 13.3.0 (`-O2 -march=native -Wall -g`)
 * **Methodology:** 10 independent runs per input size ($n$), measured with `CLOCK_MONOTONIC`.
